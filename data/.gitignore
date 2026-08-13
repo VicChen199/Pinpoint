@@ -1,0 +1,3 @@
+# Local SQLite and uploaded PDFs
+app.db
+uploads/*.pdf

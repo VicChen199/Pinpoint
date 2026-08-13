@@ -2,9 +2,55 @@
   {
     "id": "pin_fixture_indemnify_p1",
     "page": 1,
-    "x": 72,
-    "y": 80,
+    "x": 165.384,
+    "y": 92,
     "text": "indemnify",
-    "bbox": { "x": 72, "y": 80, "width": 92, "height": 14 }
+    "bbox": { "x": 165.384, "y": 92, "width": 52.692, "height": 12 },
+    "explanation": "Here, indemnify means the tenant promises to cover the landlord if someone makes a claim tied to the tenant’s use of the property. The surrounding sentence limits that promise to claims arising from the lease. This is a general reading of this excerpt, not legal advice."
+  },
+  {
+    "id": "pin_fixture_force_majeure_p1",
+    "page": 1,
+    "x": 451.536,
+    "y": 92,
+    "text": "force majeure",
+    "bbox": { "x": 451.536, "y": 92, "width": 74.028, "height": 12 },
+    "explanation": "Force majeure is an event outside the parties’ control that the lease treats as a source of claims. In this excerpt it sits next to the tenant’s indemnify promise, so it is part of that claim language. The sample does not define which events count."
+  },
+  {
+    "id": "pin_fixture_hold_harmless_p1",
+    "page": 1,
+    "x": 216.756,
+    "y": 112,
+    "text": "hold harmless",
+    "bbox": { "x": 216.756, "y": 112, "width": 76.032, "height": 12 },
+    "explanation": "Hold harmless is a promise that the landlord should not have to bear loss from the tenant’s ordinary use. It appears in the same excerpt as indemnify, as a second protective phrase. The sample does not spell out what ordinary use includes."
+  },
+  {
+    "id": "pin_fixture_indemnify_p2",
+    "page": 2,
+    "x": 217.428,
+    "y": 92,
+    "text": "indemnify",
+    "bbox": { "x": 217.428, "y": 92, "width": 52.692, "height": 12 },
+    "explanation": "This second indemnify is a different occurrence: both parties agree to cover each other. It is tied to liquidated damages later in the same sentence. Same word as page 1, separate pin."
+  },
+  {
+    "id": "pin_fixture_liquidated_damages_p2",
+    "page": 2,
+    "x": 350.832,
+    "y": 92,
+    "text": "liquidated damages",
+    "bbox": { "x": 350.832, "y": 92, "width": 106.068, "height": 12 },
+    "explanation": "Liquidated damages are an amount the parties name in advance if someone defaults. This excerpt says the mutual indemnify promise is for those damages. It does not state the dollar amount."
+  },
+  {
+    "id": "pin_fixture_herein_p2",
+    "page": 2,
+    "x": 311.472,
+    "y": 112,
+    "text": "herein",
+    "bbox": { "x": 311.472, "y": 112, "width": 34.02, "height": 12 },
+    "explanation": "Herein means “in this document.” The sentence says the remedies apply to defaults described in this lease excerpt. The sample does not list those defaults beyond this page."
   }
 ]

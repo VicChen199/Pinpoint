@@ -1,6 +1,45 @@
-main {
-  font-family: system-ui, sans-serif;
-  max-width: 40rem;
-  margin: 2rem auto;
-  padding: 0 1rem;
+.app-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100%;
+  min-height: 0;
+}
+
+.app-shell-panel-open {
+  grid-template-columns: 1fr 22rem;
+}
+
+.viewer-column {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.panel-column {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid #d6d3d1;
+}
+
+.app-banner {
+  margin: 0;
+  padding: 0.5rem 0.85rem;
+  background: #fef3c7;
+  color: #7c2d12;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell,
+  .app-shell-panel-open {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-column {
+    border-left: 0;
+  }
+
+  .app-shell-panel-open .viewer-column {
+    padding-bottom: 44vh;
+  }
 }

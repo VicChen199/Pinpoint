@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react'
 // Browser calls /api/... ; Vite strips /api and forwards to FastAPI on :8000.
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    include: ["pdfjs-dist"],
+  },
+  worker: {
+    format: "es",
+  },
   server: {
     port: 5173,
     proxy: {

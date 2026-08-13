@@ -10,8 +10,10 @@ Track B fills upload, SQLite CRUD, and file serving.
 
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from db import create_tables
+from explain import MissingAPIKeyError, explain
 
 app = FastAPI(title="Pinpoint prototype")
 create_tables()
@@ -51,9 +53,22 @@ async def upload(file: UploadFile):
     )
 
 
+class ExplainRequest(BaseModel):
+    phrase: str
+    context: str
+    document_type: str = Field(default="unknown")
+
+
 @app.post("/documents/{doc_id}/pins/{pin_id}/explain")
-async def explain_pin(doc_id: str, pin_id: str):
-    return JSONResponse(
-        status_code=501,
-        content={"detail": "Track D implements explain; glue wires this route"},
-    )
+async def explain_pin(doc_id: str, pin_id: str, body: ExplainRequest):
+    # Track D: body-driven explain for curl /docs. Glue looks up pin ids and
+    # writes pins.explanation; 404 for unknown document/pin is Track B/glue.
+    _ = (doc_id, pin_id)
+    try:
+        text = explain(body.phrase, body.context, body.document_type)
+    except MissingAPIKeyError:
+        raise HTTPException(
+            status_code=503,
+            detail="LLM API key is not configured",
+        )
+    return {"explanation": text}

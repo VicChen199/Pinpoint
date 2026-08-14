@@ -8,11 +8,13 @@ type ExplanationPanelProps = {
   stack: StackItem[];
   allPins: Pin[];
   stackEpoch: number;
+  loadingPinId?: string | null;
   onStackToggle: (pinId: string) => void;
   onClose: () => void;
 };
 
-function bodyText(pin: Pin): string {
+function bodyText(pin: Pin, loading: boolean): string {
+  if (loading && !pin.explanation) return "Loading explanation…";
   if (pin.explanation) return pin.explanation;
   return "No explanation is stored on this pin yet.";
 }
@@ -32,6 +34,7 @@ export function ExplanationPanel({
   stack,
   allPins,
   stackEpoch,
+  loadingPinId,
   onStackToggle,
   onClose,
 }: ExplanationPanelProps) {
@@ -56,7 +59,9 @@ export function ExplanationPanel({
         <p className="explanation-card-kicker">Current</p>
         <h3 className="explanation-card-term">{current.text}</h3>
         <p className="explanation-card-meta">Page {current.page}</p>
-        <p className="explanation-card-body">{bodyText(current)}</p>
+        <p className="explanation-card-body">
+          {bodyText(current, loadingPinId === current.id)}
+        </p>
       </section>
 
       <div className="explanation-stack" ref={stackRef} aria-label="Earlier explanations">
@@ -77,7 +82,9 @@ export function ExplanationPanel({
                 <span className="explanation-stack-meta">Page {item.pin.page}</span>
                 {snippet ? <span className="explanation-stack-snippet">{snippet}</span> : null}
                 {item.expanded ? (
-                  <p className="explanation-stack-body">{bodyText(item.pin)}</p>
+                  <p className="explanation-stack-body">
+                    {bodyText(item.pin, false)}
+                  </p>
                 ) : null}
               </button>
             );

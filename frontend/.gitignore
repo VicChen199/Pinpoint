@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Local smoke-test PDF (not part of the prototype contract)
+public/craft-que.pdf
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

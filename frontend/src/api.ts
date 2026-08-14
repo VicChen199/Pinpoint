@@ -12,6 +12,14 @@ export function getHealth(): Promise<{ ok: boolean }> {
   return request("/api/health");
 }
 
+export function uploadDocument(
+  file: File,
+): Promise<{ id: string; status: Document["status"] }> {
+  const body = new FormData();
+  body.append("file", file);
+  return request("/api/documents", { method: "POST", body });
+}
+
 export function listDocuments(): Promise<Document[]> {
   return request("/api/documents");
 }

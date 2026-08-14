@@ -1,18 +1,111 @@
 .app-shell {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 14rem 1fr;
   height: 100%;
   min-height: 0;
 }
 
 .app-shell-panel-open {
-  grid-template-columns: 1fr 22rem;
+  grid-template-columns: 14rem 1fr 22rem;
+}
+
+.doc-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.75rem;
+  border-right: 1px solid #d6d3d1;
+  background: #fafaf9;
+}
+
+.doc-heading {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #57534e;
+}
+
+.doc-column button,
+.doc-upload {
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.doc-upload {
+  display: block;
+  color: #44403c;
+}
+
+.doc-upload input {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.doc-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.doc-empty {
+  color: #78716c;
+  font-size: 0.85rem;
+}
+
+.doc-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  margin: 0 0 0.35rem;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 0.35rem;
+  background: transparent;
+  text-align: left;
+}
+
+.doc-item-active {
+  border-color: #a8a29e;
+  background: #fff;
+}
+
+.doc-item-name {
+  font-size: 0.85rem;
+  word-break: break-word;
+}
+
+.doc-item-status {
+  font-size: 0.75rem;
+  color: #78716c;
 }
 
 .viewer-column {
   position: relative;
   min-width: 0;
   min-height: 0;
+}
+
+.app-placeholder {
+  padding: 2rem 1.25rem;
+}
+
+.app-placeholder h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.app-placeholder p {
+  margin: 0;
+  color: #57534e;
 }
 
 .panel-column {
@@ -33,6 +126,12 @@
   .app-shell,
   .app-shell-panel-open {
     grid-template-columns: 1fr;
+  }
+
+  .doc-column {
+    border-right: 0;
+    border-bottom: 1px solid #d6d3d1;
+    max-height: 28vh;
   }
 
   .panel-column {

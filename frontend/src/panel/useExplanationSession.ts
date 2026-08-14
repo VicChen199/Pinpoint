@@ -68,6 +68,26 @@ export function useExplanationSession() {
     setSession((prev) => (prev.everOpened ? { ...prev, panelOpen: true } : prev));
   }, []);
 
+  const applyExplanation = useCallback((pinId: string, explanation: string) => {
+    setSession((prev) => ({
+      ...prev,
+      current:
+        prev.current?.id === pinId
+          ? { ...prev.current, explanation }
+          : prev.current,
+      stack: prev.stack.map((item) =>
+        item.pin.id === pinId
+          ? { ...item, pin: { ...item.pin, explanation } }
+          : item,
+      ),
+    }));
+  }, []);
+
+  const reset = useCallback(() => {
+    setFocusPinId(null);
+    setSession(emptySession);
+  }, []);
+
   return {
     current: session.current,
     stack: session.stack,
@@ -79,5 +99,7 @@ export function useExplanationSession() {
     toggleStack,
     closePanel,
     reopenPanel,
+    applyExplanation,
+    reset,
   };
 }

@@ -1,7 +1,8 @@
 """Background document processing.
 
-extract → detect → INSERT pins → status ready | failed.
-Does not call explain.py. Glue wires this into FastAPI BackgroundTasks.
+Skip if status is already ready. Otherwise extract → detect → INSERT pins →
+status ready | failed. Does not call explain.py. Glue wires this into FastAPI
+BackgroundTasks.
 """
 
 from __future__ import annotations
@@ -25,13 +26,16 @@ def process_document(doc_id: str) -> None:
     conn = get_connection()
     try:
         row = conn.execute(
-            "SELECT id, storage_path FROM documents WHERE id = ?",
+            "SELECT id, storage_path, status FROM documents WHERE id = ?",
             (doc_id,),
         ).fetchone()
         if row is None:
             log.error("process_document: unknown document %s", doc_id)
             return
+        if row["status"] == "ready":
+            return
 
+        started_status = row["status"]
         pdf_path = _resolve_pdf_path(row["storage_path"])
         try:
             words_doc = extract_words(str(pdf_path))
@@ -44,8 +48,8 @@ def process_document(doc_id: str) -> None:
             conn.commit()
         except Exception:
             conn.execute(
-                "UPDATE documents SET status = 'failed' WHERE id = ?",
-                (doc_id,),
+                "UPDATE documents SET status = 'failed' WHERE id = ? AND status = ?",
+                (doc_id, started_status),
             )
             conn.commit()
             log.exception("process_document failed for %s", doc_id)

@@ -1,0 +1,37 @@
+.underline-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.underline-hit {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.underline-hit::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 1px;
+  background: #c45c16;
+}
+
+.underline-hit:hover::after,
+.underline-hit:focus-visible::after {
+  height: 3px;
+  background: #8a3d0d;
+}
+
+.underline-hit:focus-visible {
+  outline: 2px solid #8a3d0d;
+  outline-offset: 2px;
+}

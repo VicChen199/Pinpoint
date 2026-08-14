@@ -3,30 +3,57 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 5 0 R /Resources << /Font << /F1 7 0 R >> >> >>
 endobj
 4 0 obj
-<< /Length 46 >>
-stream
-BT /F1 24 Tf 72 700 Td (Pinpoint sample) Tj ET
-endstream
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 7 0 R >> >> >>
 endobj
 5 0 obj
+<< /Length 546 >>
+stream
+BT /F1 18 Tf 72.000 720.000 Td (Sample lease excerpt) Tj ET
+BT /F1 12 Tf 72.000 688.000 Td (The Tenant shall ) Tj ET
+BT /F1 12 Tf 165.384 688.000 Td (indemnify) Tj ET
+BT /F1 12 Tf 218.076 688.000 Td ( the Landlord against claims arising from a ) Tj ET
+BT /F1 12 Tf 451.536 688.000 Td (force majeure) Tj ET
+BT /F1 12 Tf 525.564 688.000 Td ( event.) Tj ET
+BT /F1 12 Tf 72.000 668.000 Td (The Tenant also agrees to ) Tj ET
+BT /F1 12 Tf 216.756 668.000 Td (hold harmless) Tj ET
+BT /F1 12 Tf 292.788 668.000 Td ( the Landlord for ordinary use.) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Length 502 >>
+stream
+BT /F1 18 Tf 72.000 720.000 Td (Continued terms) Tj ET
+BT /F1 12 Tf 72.000 688.000 Td (The parties again agree to ) Tj ET
+BT /F1 12 Tf 217.428 688.000 Td (indemnify) Tj ET
+BT /F1 12 Tf 270.120 688.000 Td ( each other for ) Tj ET
+BT /F1 12 Tf 350.832 688.000 Td (liquidated damages) Tj ET
+BT /F1 12 Tf 456.900 688.000 Td (.) Tj ET
+BT /F1 12 Tf 72.000 668.000 Td (Those remedies apply to defaults described ) Tj ET
+BT /F1 12 Tf 311.472 668.000 Td (herein) Tj ET
+BT /F1 12 Tf 345.492 668.000 Td (.) Tj ET
+endstream
+endobj
+7 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 xref
-0 6
+0 8
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
-0000000115 00000 n 
-0000000241 00000 n 
-0000000337 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000000373 00000 n 
+0000000969 00000 n 
+0000001521 00000 n 
 trailer
-<< /Size 6 /Root 1 0 R >>
+<< /Size 8 /Root 1 0 R >>
 startxref
-407
+1591
 %%EOF

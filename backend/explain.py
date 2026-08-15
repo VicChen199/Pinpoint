@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from google import genai
 
 _BACKEND_DIR = Path(__file__).resolve().parent
 
@@ -23,14 +23,14 @@ Rules:
 
 
 class MissingAPIKeyError(Exception):
-    """Raised when OPENAI_API_KEY is missing or empty."""
+    """Raised when GEMINI_API_KEY is missing or empty."""
 
 
 def explain(phrase: str, context: str, document_type: str) -> str:
     load_dotenv(_BACKEND_DIR / ".env")
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
-        raise MissingAPIKeyError("OPENAI_API_KEY is not configured")
+        raise MissingAPIKeyError("GEMINI_API_KEY is not configured")
 
     doc_type = (document_type or "").strip() or "unknown"
     user_content = (
@@ -39,13 +39,13 @@ def explain(phrase: str, context: str, document_type: str) -> str:
         f"Context:\n{context}"
     )
 
-    client = OpenAI(api_key=api_key)
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        temperature=0.3,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_content},
-        ],
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-lite",
+        contents=user_content,
+        config=genai.types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            temperature=0.3,
+        ),
     )
-    return (response.choices[0].message.content or "").strip()
+    return (response.text or "").strip()

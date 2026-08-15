@@ -1,8 +1,7 @@
 """Background document processing.
 
-Skip if status is already ready. Otherwise extract → detect → INSERT pins →
-status ready | failed. Does not call explain.py. Glue wires this into FastAPI
-BackgroundTasks.
+Skip if status is already ready. Otherwise extract → persist words JSON →
+detect → INSERT pins → status ready | failed. Does not call explain.py.
 """
 
 from __future__ import annotations
@@ -12,6 +11,7 @@ import logging
 import sys
 from pathlib import Path
 
+from context import write_words_doc
 from db import ROOT, create_tables, get_connection
 from detect import detect_pins
 from extract import extract_words
@@ -39,6 +39,7 @@ def process_document(doc_id: str) -> None:
         pdf_path = _resolve_pdf_path(row["storage_path"])
         try:
             words_doc = extract_words(str(pdf_path))
+            write_words_doc(doc_id, words_doc)
             pins = detect_pins(words_doc, max_per_page=MAX_PER_PAGE)
             _replace_pins(conn, doc_id, pins)
             conn.execute(

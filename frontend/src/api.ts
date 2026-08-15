@@ -35,7 +35,7 @@ export function getPins(id: string): Promise<{ pins: Pin[] }> {
 export function explainPin(
   documentId: string,
   pinId: string,
-  body: { phrase: string; context: string; document_type: string },
+  body: { phrase: string; document_type: string },
 ): Promise<{ explanation: string }> {
   return request(`/api/documents/${documentId}/pins/${pinId}/explain`, {
     method: "POST",

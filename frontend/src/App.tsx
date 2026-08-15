@@ -134,15 +134,9 @@ function App() {
     session.activateFromPage(pin);
     if (pin.explanation) return;
 
-    const context = pins
-      .filter((other) => other.page === pin.page)
-      .map((other) => other.text)
-      .join(" ");
-
     setLoadingPinId(pin.id);
     void explainPin(activeId, pin.id, {
       phrase: pin.text,
-      context: context || pin.text,
       document_type: "unknown",
     })
       .then(({ explanation }) => {

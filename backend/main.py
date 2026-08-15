@@ -16,6 +16,7 @@ from fastapi import BackgroundTasks, FastAPI, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from context import load_words_doc, surrounding_context
 from db import (
     ROOT,
     UPLOAD_DIR,
@@ -38,8 +39,8 @@ PDF_MAGIC = b"%PDF-"
 
 
 class ExplainRequest(BaseModel):
-    phrase: str
-    context: str
+    phrase: str = ""
+    context: str | None = None
     document_type: str = Field(default="unknown")
 
 
@@ -112,7 +113,8 @@ async def upload(file: UploadFile, background_tasks: BackgroundTasks):
 
 @app.post("/documents/{doc_id}/pins/{pin_id}/explain")
 async def explain_pin(doc_id: str, pin_id: str, body: ExplainRequest):
-    if get_document(doc_id) is None:
+    doc = get_document(doc_id)
+    if doc is None:
         raise HTTPException(status_code=404, detail="Document not found")
     pin = get_pin(doc_id, pin_id)
     if pin is None:
@@ -122,9 +124,12 @@ async def explain_pin(doc_id: str, pin_id: str, body: ExplainRequest):
     if existing:
         return {"explanation": existing}
 
-    phrase = body.phrase.strip() or pin["text"]
+    phrase = (body.phrase or "").strip() or pin["text"]
+    pdf_path = _resolve_storage_path(doc["storage_path"])
+    words_doc = load_words_doc(doc_id, str(pdf_path))
+    context = surrounding_context(words_doc, pin["page"], pin["bbox"], phrase)
     try:
-        text = explain(phrase, body.context, body.document_type)
+        text = explain(phrase, context, body.document_type)
     except MissingAPIKeyError:
         raise HTTPException(
             status_code=503,

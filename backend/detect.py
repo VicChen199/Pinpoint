@@ -1,18 +1,23 @@
-"""Heuristic term detection → pin dicts.
+"""Term detection → pin dicts.
 
 Each dict is a Pin without document_id / explanation (prototype-contract.md).
 Coordinates stay in unscaled PDF user space (scale = 1).
-No domain dictionary: score abbreviations, uncommon words, and multi-word terms.
+Gemini picks phrases from extracted page text; heuristics are the fallback.
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import re
 import sys
 import uuid
 from collections import Counter
 from pathlib import Path
+
+from google import genai
+
+from explain import get_gemini_api_key
 
 # Function words only — not a domain jargon list.
 STOPWORDS = frozenset(
@@ -159,17 +164,138 @@ LATINATE_SUFFIXES = (
 PIN_MIN_CONFIDENCE = 60
 MAX_PHRASE_WORDS = 3
 
+log = logging.getLogger(__name__)
+
+DETECT_PROMPT = """You pick phrases a general reader would want explained from one page of a document.
+
+Rules:
+- Return a JSON array of strings only.
+- Each string must be copied exactly from the page text (same words, same order).
+- At most the requested number of phrases.
+- Prefer jargon, abbreviations, and multi-word technical or legal terms.
+- Skip personal names, titles, headers, page numbers, and common words.
+"""
+
 
 def detect_pins(words_doc: dict, *, max_per_page: int = 12) -> list[dict]:
     pages = words_doc.get("pages") or []
     frequencies = _term_frequencies(pages)
     pins: list[dict] = []
     for page in pages:
-        pins.extend(_pins_for_page(page, frequencies, max_per_page=max_per_page))
+        page_pins = _llm_pins_for_page(page, max_per_page=max_per_page)
+        if not page_pins:
+            page_pins = _heuristic_pins_for_page(
+                page, frequencies, max_per_page=max_per_page
+            )
+        pins.extend(page_pins)
     return pins
 
 
-def _pins_for_page(page: dict, frequencies: Counter, *, max_per_page: int) -> list[dict]:
+def _llm_pins_for_page(page: dict, *, max_per_page: int) -> list[dict]:
+    words = list(page.get("words") or [])
+    page_text = " ".join(
+        (w.get("text") or "").strip() for w in words if (w.get("text") or "").strip()
+    )
+    if not page_text:
+        return []
+    try:
+        phrases = _pick_phrases(page_text, max_per_page)
+    except Exception:
+        log.exception("LLM phrase pick failed for page %s", page.get("page"))
+        return []
+    if not phrases:
+        return []
+
+    page_no = int(page.get("page") or 0)
+    chosen: list[dict] = []
+    seen: set[str] = set()
+    for phrase in phrases:
+        key = " ".join(_normalize(token) for token in phrase.split() if _normalize(token))
+        if not key or key in seen:
+            continue
+        span = _match_phrase_span(words, phrase)
+        if span is None:
+            continue
+        seen.add(key)
+        bbox = _union_bbox(span)
+        cand = {
+            "page": page_no,
+            "text": " ".join(w["text"].strip() for w in span),
+            "bbox": bbox,
+            "x": bbox["x"],
+            "y": bbox["y"],
+        }
+        if any(_overlaps(cand["bbox"], pin["bbox"]) for pin in chosen):
+            continue
+        chosen.append(_to_pin(cand))
+        if len(chosen) >= max_per_page:
+            break
+    return chosen
+
+
+def _pick_phrases(page_text: str, max_per_page: int) -> list[str]:
+    api_key = get_gemini_api_key()
+    if not api_key:
+        return []
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(
+        model="gemini-3.5-flash-lite",
+        contents=f"Pick at most {max_per_page} phrases.\n\nPage text:\n{page_text}",
+        config=genai.types.GenerateContentConfig(
+            system_instruction=DETECT_PROMPT,
+            temperature=0.2,
+            response_mime_type="application/json",
+        ),
+    )
+    return _parse_phrase_list(response.text or "")
+
+
+def _parse_phrase_list(raw: str) -> list[str]:
+    text = raw.strip()
+    if not text:
+        return []
+    data = _load_json_array(text)
+    if not isinstance(data, list):
+        return []
+    out: list[str] = []
+    for item in data:
+        if isinstance(item, str) and item.strip():
+            out.append(item.strip())
+            continue
+        if isinstance(item, dict):
+            phrase = item.get("phrase") or item.get("text")
+            if isinstance(phrase, str) and phrase.strip():
+                out.append(phrase.strip())
+    return out
+
+
+def _load_json_array(text: str):
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("[")
+        end = text.rfind("]")
+        if start < 0 or end <= start:
+            return None
+        try:
+            return json.loads(text[start : end + 1])
+        except json.JSONDecodeError:
+            return None
+
+
+def _match_phrase_span(words: list[dict], phrase: str) -> list[dict] | None:
+    keys = [_normalize(token) for token in phrase.split() if _normalize(token)]
+    if not keys:
+        return None
+    page_keys = [_normalize(w.get("text") or "") for w in words]
+    n = len(keys)
+    for i in range(len(page_keys) - n + 1):
+        if page_keys[i : i + n] == keys:
+            return words[i : i + n]
+    return None
+
+
+def _heuristic_pins_for_page(page: dict, frequencies: Counter, *, max_per_page: int) -> list[dict]:
     page_no = int(page.get("page") or 0)
     indexed = []
     for word in page.get("words") or []:

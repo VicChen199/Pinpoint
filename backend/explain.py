@@ -13,12 +13,12 @@ _BACKEND_DIR = Path(__file__).resolve().parent
 SYSTEM_PROMPT = """You explain a highlighted phrase from a document for a general reader.
 
 Rules:
-- Plain English for a general reader.
-- Use only the provided context; do not invent facts, figures, or citations.
-- Explain the term and how it applies in this document.
+- Lead with a short general-reader definition of the phrase.
+- If the surrounding text clearly shows how the word is used here, add at most one sentence of local application.
+- Do not invent figures, names, or citations.
+- If local use is unclear, still define the word. Do not apologize or say that context is missing.
 - 2–4 short sentences.
 - No legal, medical, financial, or other professional advice.
-- If context is insufficient, say what is missing.
 """
 
 
@@ -26,9 +26,13 @@ class MissingAPIKeyError(Exception):
     """Raised when GEMINI_API_KEY is missing or empty."""
 
 
-def explain(phrase: str, context: str, document_type: str) -> str:
+def get_gemini_api_key() -> str:
     load_dotenv(_BACKEND_DIR / ".env")
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    return os.getenv("GEMINI_API_KEY", "").strip()
+
+
+def explain(phrase: str, context: str, document_type: str) -> str:
+    api_key = get_gemini_api_key()
     if not api_key:
         raise MissingAPIKeyError("GEMINI_API_KEY is not configured")
 
@@ -41,7 +45,7 @@ def explain(phrase: str, context: str, document_type: str) -> str:
 
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
-        model="gemini-2.5-flash-lite",
+        model="gemini-3.5-flash-lite",
         contents=user_content,
         config=genai.types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
